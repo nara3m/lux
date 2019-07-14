@@ -1,3 +1,4 @@
+A copy of the this source code is published as supporting information [S5 Dataset](https://doi.org/10.1371/journal.pcbi.1004511.s009) in the manuscript [Marella et. al. PLOS Computational Biology](https://doi.org/10.1371/journal.pcbi.1004511)
 -------------------------------------------------------------
 Before you can start working with the scripts in this folder, download and install following software and libraries. All scripts were designed-for and tested on ubuntu (linux) operating system
 
