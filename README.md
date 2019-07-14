@@ -33,7 +33,7 @@ As you can see in the example folder **SC** there are a total of 11 files with t
 Files 1-8 are real lipidome data [Esjing et. al](https://doi.org/10.1073/pnas.0811700106) included here for illustration. 
 9, 10 and 11 are special files that have to included in all new folders you create.
 
-Files 1-8 follow a tab delimited format. First column is the name of the lipid. Second column is the concentration of that lipid. If you do not have concentrations, put '0's in concentration column - **DO NOT LEAVE THAT COLOUMN EMPTY**
+Files 1-8 follow a tab delimited format. First column is the name of the lipid. Second column is the concentration of that lipid. If you do not have concentrations, put '0's in concentration column - **DO NOT LEAVE THAT COLUMN EMPTY**
 
 # Step 2: Check Lipid Names
 
