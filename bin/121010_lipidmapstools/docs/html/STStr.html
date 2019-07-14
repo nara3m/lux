@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: STStr.pm</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/STStr.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/STStr.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>STStr - Sterol (ST) structure generation methods</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>use STStr;</p>
+<p>use STStr qw(:all);</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>STStr module provides these methods:</p>
+<div class="examplebox">
+    ExpandSTCmpdAbbrevs - Expand ST abbreviation
+ <br/>   GenerateCmpdOntologyData - Generate ontology data
+ <br/>   GenerateCmpdOntologySDDataLines - Generate ontology data lines for
+                                      SD file
+ <br/>   GenerateSTStrData - Generate structure data
+ <br/>   GenerateSDFile - Generate SD file
+ <br/>   IsSTAbbrevSupported - Is it a supported ST abbreviation
+ <br/>   IsSTSubstituentsNameSupported - Is it a supported ST substituent name
+ <br/>   IsSTDoubleBondsAbbrevOkay - Is it a valid ST double bond abbreviation
+ <br/>   IsSTSubstituentsAbbrevOkay - Is it a valid ST substituent abbreviation
+ <br/>   IsWildCardInSTAbbrev - Does ST abbreviatio contains a wild card
+ <br/>   ParseSTAbrev - Parse ST abbreviation
+ <br/>   ParseSTDoubleBondAbbrev - Parse ST double bond abbreviation
+ <br/>   ParseSTSubstituentAbbrev - Parse ST substituent abbreviation
+ <br/>   SetupSTCmpdAbbrevTemplateDataMap - Setup template structure data map
+ <br/>   ValidateSTAbbrev - Validate ST abbreviation</div>
+<p>
+</p>
+<h2>METHODS</h2>
+<dl>
+<dt><strong>ExpandSTCmpdAbbrevs</strong></dt>
+<dd>
+<div class="examplebox">
+    $ExpandedAbbrevArrayRef = ExpandSTCmpdAbbrevs($CmpdAbbrev);</div>
+<p>Return a reference to an array containing complete ST abbreviations. Wild card
+characters in ST abbreviation name are expanded to generate fully qualified
+ST abbreviations.</p>
+</dd>
+<dt><strong>GenerateCmpdOntologyData</strong></dt>
+<dd>
+<div class="examplebox">
+    $DataHashRef = GenerateCmpdOntologyData($CmpdDataRef);</div>
+<p>Return a reference to a hash containing ontology data with hash keys and values
+corresponding to property names and values.</p>
+</dd>
+<dt><strong>GenerateCmpdOntologySDDataLines</strong></dt>
+<dd>
+<div class="examplebox">
+    $DataLinesArrayRef =
+        GenerateCmpdOntologySDDataLines($CmpDataRef);</div>
+<p>Return a reference to an array containing ontology data lines suitable for
+generate SD file data block.</p>
+</dd>
+<dt><strong>GenerateSTStrData</strong></dt>
+<dd>
+<div class="examplebox">
+    ($AtomLinesArrayRef, $BondLinesArrayRef) =
+       GenerateSTStrData($CmpdDataRef);</div>
+<p>Return array references containing atom and bond data lines for SD file. Appropriate atom
+and bond data lines are generated using abbreviation template data.</p>
+</dd>
+<dt><strong>GenerateSDFile</strong></dt>
+<dd>
+<div class="examplebox">
+    GenerateSDFile($SDFileName, $CmdAbbrevsRef);</div>
+<p>Generate a SD file for compound abbreviations. Structure data for specified abbreviation
+is generated sequentially and written to SD file.</p>
+</dd>
+<dt><strong>IsSTAbbrevSupported</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSTAbbrevSupported($Abbrev);</div>
+<p>Return 1 or 0 based on whether ST abbreviation is supported.</p>
+</dd>
+<dt><strong>IsSTSubstituentsNameSupported</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSTSubstituentsNameSupported($SubstituentAbbrev);</div>
+<p>Return 1 or 0 based on whether ST substituent abbreviation is supported.</p>
+</dd>
+<dt><strong>IsSTDoubleBondsAbbrevOkay</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSTDoubleBondsAbbrevOkay($STAbbrev, $STType,
+       $SubstituentsAbbrev, $DoubleBondsAbbrev);</div>
+<p>Return 1 or 0 based on whether ST double bond abbreviation is valid.</p>
+</dd>
+<dt><strong>IsSTSubstituentsAbbrevOkay</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSTSubstituentsAbbrevOkay($STAbbrev, $STType,
+       $SubstituentsAbbrev, $DoubleBondsAbbrev);</div>
+<p>Return 1 or 0 based on whether ST substituent abbreviation is valid.</p>
+</dd>
+<dt><strong>IsWildCardInSTAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSTAbbrevSupported($Abbrev);</div>
+<p>Return 1 or 0 based on whether ST abbreviation contains wild card.</p>
+</dd>
+<dt><strong>ParseSTAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    ($STType,  $SubstituentsAbbrev, $DoubleBondsAbbrev) =
+        ParseSTAbrev($Abbrev);</div>
+<p>Parse ST abbreviation and return these values: STType,  SubstituentsAbbrev, and
+DoubleBondsAbbrev.</p>
+</dd>
+<dt><strong>ParseSTDoubleBondAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    ($BondPos1, $BondPos1) = ParseSTDoubleBondAbbrev($Abbrev);</div>
+<p>Parse ST double bond abbreviation and return these values: BondPos1 and BondPos2.</p>
+</dd>
+<dt><strong>ParseSTSubstituentAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    ($SubstituentPos, $SubstituentAbbrev, $StereoChemistry) =
+       ParseSTSubstituentAbbrev($Abbrev);</div>
+<p>Parse ST substituents abbreviation and return these values: SubstituentPos, SubstituentAbbrev,
+and SubstituentStereoChemistry.</p>
+</dd>
+<dt><strong>SetupSTCmpdAbbrevTemplateDataMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $AbbrevTemplateDataMapRef =
+       SetupSTCmpdAbbrevTemplateDataMap($Abbrev);</div>
+<p>Return a reference to a hash containing template data for compound abbreviation. The
+template data is used to generate SD file for compound abbreviation.</p>
+</dd>
+<dt><strong>ValidateSTAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = ValidateSTAbbrev($Abbrev);</div>
+<p>Return 1 or 0 based on whether a ST abbreviation is valid.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./ChainStr.html">ChainStr.pm</a>,&nbsp<a href="./LMAPSStr.html">LMAPSStr.pm</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

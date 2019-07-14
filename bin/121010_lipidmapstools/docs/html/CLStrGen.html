@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: CLStrGen.pl</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/CLStrGen.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/CLStrGen.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>CLStrGen.pl - Generate structures for Glycerophosphoglycerophosphoglycerols (Cardiolipins)</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>CLStrGen.pl  CLAbbrev|CLAbbrevFileName ...</p>
+<p>CLStrGen.pl [<strong>-c, --ChainAbbrevMode</strong> <em>MostLikely | Arbitrary</em>]
+[<strong>-h, --help</strong>] [<strong>-m, --mode</strong> <em>Abbrev | AbbrevFileName</em>]
+[<strong>-p, --ProcessMode</strong> <em>WriteSDFile | CountOnly</em>] [<strong>-o, --overwrite</strong>]
+[<strong>-r, --root</strong> rootname] [<strong>-w, --workingdir</strong> dirname] &lt;arguments&gt;...</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>Generate Cardiolipins (CL) structures using compound abbreviations specified on
+a command line or in a CSV/TSV Text file. All the command line arguments represent either
+compound abbreviations or file name containing abbreviations. Use mode option to control
+the type of command line arguments.</p>
+<p>A SD file, containing structures for all CL abbreviations along with ontological information, is
+generated as an output.</p>
+<p>
+</p>
+<h2>SUPPORTED ABBREVIATIONS</h2>
+<p>Current support for CL structure generation include these main classes and sub classes:</p>
+<p>o Glycerophosphoglycerophosphoglycerols (Cardiolipins)</p>
+<div class="examplebox">
+    . Diacylglycerophosphoglycerophosphodiradylglycerols
+ <br/>   . Diacylglycerophosphoglycerophosphomonoradylglycerols
+ <br/>   . 1-alkyl,2-acylglycerophosphoglycerophosphodiradylglycerols
+ <br/>   . 1-alkyl,2-acylglycerophosphoglycerophosphomonoradylglycerols
+ <br/>   . 1Z-alkenyl,2-acylglycerophosphoglycerophosphodiradylglycerols
+ <br/>   . 1Z-alkenyl,2-acylglycerophosphoglycerophosphomonoradylglycerols
+ <br/>   . Monoacylglycerophosphoglycerophosphomonoradylglycerols
+ <br/>   . 1-alkyl glycerophosphoglycerophosphodiradylglycerols
+ <br/>   . 1-alkyl glycerophosphoglycerophosphomonoradylglycerols
+ <br/>   . 1Z-alkenylglycerophosphoglycerophosphodiradylglycerols
+ <br/>   . 1Z-alkenylglycerophosphoglycerophosphomonoradylglycerols</div>
+<p>
+</p>
+<h2>OPTIONS</h2>
+<dl>
+<dt><strong>-c, --ChainAbbrevMode</strong> <em>MostLikely|Arbitrary</em></dt>
+<dd>
+<p>Specify what types of acyl chain abbreviations are allowed during processing of complete
+abbreviations: allow most likely chain abbreviations containing specific double bond geometry
+specifications; allow any acyl chain abbreviation with valid chain length and double bond
+geometry specificatios. Possible values: <em>MostLikely or Arbitrary</em>. Default value: <em>MostLikely</em>.</p>
+<p><em>Arbitrary</em> value of <strong>-c, --ChainAbbrevMode</strong> option is not allowed during processing of
+abbreviations containing wild cards.</p>
+<p>During <em>MostLikely</em> value of <strong>-c, --ChainAbbrevMode</strong> option, only the most likely acyl chain
+abbreviations specified in ChainAbbrev.pm module are allowed. However, during <em>Arbitrary</em> value
+of <strong>-c, --ChainAbbrevMode</strong> option, any acyl chain abbreviations with valid chain length and
+double bond geometry can be specified. The current release of lipidmapstools support chain
+lengths from 2 to 50 as specified in ChainAbbev.pm module.</p>
+<p>In addition to double bond geometry specifications, valid substituents can be specified for in the acyl
+chain abbreviations.</p>
+</dd>
+<dt><strong>-h, --help</strong></dt>
+<dd>
+<p>Print this help message</p>
+</dd>
+<dt><strong>-m, --mode</strong> <em>Abbrev|AbbrevFileName</em></dt>
+<dd>
+<p>Controls interpretation of command line arguments. Two different methods are provided:
+specify compound abbreviations or a file name containing compound abbreviations. Possible
+values: <em>Abbrev or AbbrevFileName</em>. Default: <em>Abbrev</em></p>
+<p>In <em>AbbrevFileName</em> mode, a single line in CSV/TSV files can contain multiple compound
+abbreviations. The file extension determines delimiter used to process data lines: comma for
+CSV and tab for TSV. For files with TXT extension, only one compound abbreviation per line
+is allowed.</p>
+<p>Wild card character, *, is also supported in compound abbreviations.</p>
+<p>Examples:</p>
+<div class="examplebox">
+    Specific structures: CL(1'-[18:2(9Z,12Z)/18:2(9Z,12Z)],
+                         3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])
+ <br/>   All possibilites: *(1'-[*:*/*:*],3'-[*:*/*:*]) or
+                      *(1'-[*/*],3'-[*/*])</div>
+<p>With wild card character, +/- can also be used for chain lengths to indicate even and odd lengths at
+sn1/sn2/sn3 positions; additionally &gt; and &lt; qualifiers are also allowed to specify length
+requirements. Examples:</p>
+<div class="examplebox">
+    Odd/even number chains at sn1/sn3 and sn2/sn4: *(1'-[*+:*/*-:*],
+                                                   3'-[*+:*/*-:*])
+ <br/>   Odd/even number chains at sn1/sn3 and sn2/sn4 with length longer
+ <br/>   than 20 and 22: *(1'-[*+&gt;20:*/*-&gt;22:*],3'-[*+&gt;20:*/*-&gt;22:*])</div>
+</dd>
+<dt><strong>-p, --ProcessMode</strong> <em>WriteSDFile|CountOnly</em></dt>
+<dd>
+<p>Specify how abbreviations are processed: generate structures for specified abbreviations along
+with generating a SD file or just count the number of structures corresponding to specified
+abbreviations without generating any SD file. Possible values: <em>WriteSDFile or CountOnly</em>.
+Default: <em>WriteSDFile</em>.</p>
+<p>It can take substantial amount of time for generating all the structures and writing out a SD file
+for abbreviations containing wild cards. <em>CountOnly</em> value of <strong>--ProcessMode</strong> option can
+be used to get a quick count of number of structures to be generated without writing out any
+SD file.</p>
+</dd>
+<dt><strong>-o, --overwrite</strong></dt>
+<dd>
+<p>Overwrite existing files</p>
+</dd>
+<dt><strong>-r, --root</strong> <em>rootname</em></dt>
+<dd>
+<p>New file name is generated using the root: &lt;Root&gt;.sdf. Default for new file names: CLAbbrev.sdf,
+&lt;AbbrevFilenName&gt;.sdf, or &lt;FirstAbbrevFileName&gt;1To&lt;Count&gt;.sdf.</p>
+</dd>
+<dt><strong>-w, --workingdir</strong> <em>dirname</em></dt>
+<dd>
+<p>Location of working directory. Default: current directory</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>EXAMPLES</h2>
+<p>On some systems, command line scripts may need to be invoked using
+<em>perl -s GLStrGen.pl</em>; however, all the examples assume direct invocation
+of command line script works.</p>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for Diacylglycerophosphoglycerophosphodiradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[18:2(9Z,12Z)/18:2(9Z,12Z)],
+      3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for Diacylglycerophosphoglycerophosphomonoradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[18:2(9Z,12Z)/18:2(9Z,12Z)],
+      3'-[18:2(9Z,12Z)/0:0])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1-alkyl,2-acylglycerophosphoglycerophosphodiradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[O-16:0/18:2(9Z,12Z)],
+      3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1-alkyl,2-acylglycerophosphoglycerophosphomonoradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[O-16:0/18:2(9Z,12Z)],
+      3'-[18:2(9Z,12Z)/0:0])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1Z-alkenyl,2-acylglycerophosphoglycerophosphodiradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[P-16:0/18:2(9Z,12Z)],
+      3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1Z-alkenyl,2-acylglycerophosphoglycerophosphomonoradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[P-16:0/18:2(9Z,12Z)],
+      3'-[18:2(9Z,12Z)/0:0])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for Monoacylglycerophosphoglycerophosphomonoradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[18:2(9Z,12Z)/0:0],
+      3'-[18:2(9Z,12Z)/0:0])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1-alkyl glycerophosphoglycerophosphodiradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[O-16:0/0:0],
+      3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1-alkyl glycerophosphoglycerophosphomonoradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[O-16:0/0:0],
+      3'-[18:2(9Z,12Z)/0:0])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1Z-alkenylglycerophosphoglycerophosphodiradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[P-16:0/0:0],
+      3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])&quot;</div>
+<p>To generate a CLStructures.sdf file containing a structure specified by a command line
+CL abbreviation for 1Z-alkenylglycerophosphoglycerophosphomonoradylglycerols, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;CL(1'-[P-16:0/0:0],
+      3'-[18:2(9Z,12Z)/0:0])&quot;</div>
+<p>To enumerate all possible CL structures and generate a CLStructures.sdf
+file, type:</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;*(1'-[*/*],3'-[*/*])&quot;</div>
+<p>or</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;*(1'-[*:*/*:*],3'-[*:*/*:*])&quot;</div>
+<p>or</p>
+<div class="examplebox">
+    % CLStrGen.pl -r CLStructures -o &quot;*(1'-[*:*(*)/*:*(*)],
+       3'-[*:*(*)/*:*(*)])&quot;</div>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./FAStrGen.html">FAStrGen.pl</a>,&nbsp<a href="./GLStrGen.html">GLStrGen.pl</a>,&nbsp<a href="./GPStrGen.html">GPStrGen.pl</a>,&nbsp<a href="./SPStrGen.html">SPStrGen.pl</a>,&nbsp<a href="./STStrGen.html">STStrGen.pl</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

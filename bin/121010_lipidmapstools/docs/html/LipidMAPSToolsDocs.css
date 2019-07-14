@@ -1,0 +1,166 @@
+body
+{
+    background-color: #ffffff;
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+p
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+h1
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 18px;
+    color: #000080;
+}
+h2
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: #000080;
+}
+h3
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #000080;
+}
+hr
+{
+    color: #1174cc;
+}
+em {
+    font-style: normal;
+    color: #000080;
+    font-weight: bold
+}
+pre  {
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 11px;
+    background: #e0e9eb;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    white-space: pre;
+}
+strong
+{
+    font-weight: bold;
+}
+b
+{
+    font-weight: bold;
+}
+td
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 12px;
+}
+th
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+}
+a
+{
+    color: #0000bb;
+    text-decoration: none;
+    font-weight: normal;
+}
+a:link
+{
+    color: #0000bb;
+    text-decoration: none;
+}
+a:active
+{
+    color: #0000bb;
+    text-decoration: none;
+}
+a:visited
+{
+    color: #0000bb;
+    text-decoration: none;
+}
+a:hover
+{
+    color: #ff0000;
+    text-decoration: none;
+}
+div
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 12px;
+}
+ul
+{
+    list-style-type: circle;
+    font-size: 12px;
+    font-weight: normal;
+}
+/* toc */
+.toc ul
+{
+    list-style-type: decimal;
+    font-size: 12px;
+    font-weight: normal;
+}
+.toc li
+{
+    color: #000080;
+}
+.toc h1
+{
+    font-size: 18px;
+    color: #000080;
+}
+.toc h2
+{
+    font-size: 16px;
+    font-weight: bold;
+    color: #000080;
+}
+/* info box */
+.preinfobox
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 11px;
+    background: #e0e9eb;
+    padding-top: 0em;
+    padding-bottom: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+}
+/* displaying  examples */
+.examplebox
+{
+    font-family: verdana, arial, helvetica, sans-serif;
+    font-size: 11px;
+    background: #e0e9eb;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+}
+/* banner */
+.logo {
+  padding-left: 0.1em;
+  vertical-align: middle;
+  width: 100px;
+}
+.lmaps {
+  text-align: left;
+  vertical-align: middle;
+  font-size: 28px;
+  color: #60909d;
+  padding-left: 0.2cm;
+ width: 100%;
+}

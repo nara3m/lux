@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: ChainStr.pm</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/ChainStr.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/ChainStr.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>ChainStr - Fatty Acyls (FA), Glycerolipids (GL) and Glycerophospholipids (GP) structure data generation methods</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>use ChainStr;</p>
+<p>use ChainStr qw(:all);</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>ChainStr module provides these methods:</p>
+<div class="examplebox">
+    AssignSubstituentStereoChemistry - Assign stereochemistry to substituents
+ <br/>   GenerateAtomBlockLines - Generate SD file atom data lines
+ <br/>   GenerateBondBlockLines - Generate SD file bond data lines
+ <br/>   GenerateChainStrData - Generate structure data for chains
+ <br/>   GenerateCmpdCountsLine - Generate SD file count data line
+ <br/>   IsAnySubstituentSpecifiedWithStereoChemistry - Check stereochemistry of
+                                                   substituents
+ <br/>   SetupTemplateDataMap - Set up template data for a compound abbreviation</div>
+<p>
+</p>
+<h2>METHODS</h2>
+<dl>
+<dt><strong>AssignSubstituentStereoChemistry</strong></dt>
+<dd>
+<div class="examplebox">
+    AssignSubstituentStereoChemistry($CmpdAbbrevTemplateDataMapRef,
+        $CmdDataLinesRef);</div>
+<p>Assign stereochemistry to substituents using structure and stereochemistry data available via
+$CmpdAbbrevTemplateDataMapRef and $CmdDataLinesRef. And add new lines to existing
+structure data using $CmdDataLinesRef.</p>
+</dd>
+<dt><strong>GenerateAtomBlockLines</strong></dt>
+<dd>
+<div class="examplebox">
+    $AtomDataLines = GenerateAtomBlockLines($CmpdAbbrevTemplateDataMapRef,
+        $Sn1AtomLinesRef, $Sn2AtomLinesRef, $Sn3AtomLinesRef);</div>
+<p>Return atom data lines suitable for writing to SD file. Atom data for all approrpriate chains is
+merged into a single string using new line character as delimiter.</p>
+</dd>
+<dt><strong>GenerateBondBlockLines</strong></dt>
+<dd>
+<div class="examplebox">
+    $BondDataLines = GenerateBondBlockLines($CmpdAbbrevTemplateDataMapRef,
+        $Sn1BondLinesRef, $Sn2AtomLinesRef, $Sn3AtomLinesRef);</div>
+<p>Return bond data lines suitable for writing to SD file. Bond data for all approrpriate chains is
+merged into a single string using new line character as delimiter.</p>
+</dd>
+<dt><strong>GenerateChainStrData</strong></dt>
+<dd>
+<div class="examplebox">
+    ($AtomLinesArrayRef, $BondLinesArrayRef) = GenerateChainStrData($ChainType,
+        $CmpdAbbrevTemplateDataMapRef);</div>
+<p>Return array references containing atom and bond data lines for SD file. Appropriate atom
+and bond data lines are generated using chain type and abbreviation template data.</p>
+</dd>
+<dt><strong>GenerateCmpdCountsLine</strong></dt>
+<dd>
+<div class="examplebox">
+    $RetValue = GenerateCmpdCountsLine($CmpdAbbrevTemplateDataMapRef);</div>
+<p>Return a formatted count data line for SD file.</p>
+</dd>
+<dt><strong>IsAnySubstituentSpecifiedWithStereoChemistry</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsAnySubstituentSpecifiedWithStereoChemistry(
+        $CmpdAbbrevTemplateDataMapRef);</div>
+<p>Return 1 or 0 based on whether stereochemistry is specifed for any substituent.</p>
+</dd>
+<dt><strong>SetupTemplateDataMap</strong></dt>
+<dd>
+<div class="examplebox">
+    SetupTemplateDataMap($TemplateType, $AbbrevTemplateDataMapRef,
+        $TemplateData);</div>
+<p>Setup compound abbreviation template data using a supported template.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./FAStr.html">FAStr.pm</a>,&nbsp<a href="./GLStr.html">GLStr.pm</a>,&nbsp<a href="./GPStr.html">GPStr.pm</a>,&nbsp<a href="./LMAPSStr.html">LMAPSStr.pm</a>,&nbsp<a href="./SPStr.html">SPStr.pm</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

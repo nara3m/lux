@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: CLStr.pm</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/CLStr.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/CLStr.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>CLStr - Cardiolipins (CL) structure generation methods</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>use CLStr;</p>
+<p>use CLStr qw(:all);</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>CLStr module provides these methods:</p>
+<div class="examplebox">
+    GenerateCmpdOntologyData - Generate ontology data
+ <br/>   GenerateCmpdOntologySDDataLines - Generate ontology data lines for
+                                      SD file
+ <br/>   GenerateCLChainStrData - Generate chain structure data
+ <br/>   GenerateSDFile - Generate SD file
+ <br/>   GetCLTemplatesData - Get templates data
+ <br/>   GetCLSupportedHeadGroupMap - Get supported headgroups data
+ <br/>   GetCLTemplateID - Get templates ID
+ <br/>   IsCLChainsAbbrevSupported - Is it a supported CL abbreviation
+ <br/>   ParseCLAbbrev - Parse CL abbreviation
+ <br/>   ProcessCLCmpdAbbrevs - Process CL abbreviation
+ <br/>   SetupCLCmpdAbbrevTemplateDataMap - Setup template structure data map
+ <br/>   ValidateCLAbbrev - Validate CL abbreviation</div>
+<p>
+</p>
+<h2>METHODS</h2>
+<dl>
+<dt><strong>GenerateCmpdOntologyData</strong></dt>
+<dd>
+<div class="examplebox">
+    $DataHashRef = GenerateCmpdOntologyData($CmpDataRef);</div>
+<p>Return a reference to a hash containing ontology data with hash keys and values
+corresponding to property names and values.</p>
+</dd>
+<dt><strong>GenerateCmpdOntologySDDataLines</strong></dt>
+<dd>
+<div class="examplebox">
+    $DataLinesArrayRef =
+       GenerateCmpdOntologySDDataLines($CmpdDataRef);</div>
+<p>Return a reference to an array containing ontology data lines suitable for
+generate SD file data block.</p>
+</dd>
+<dt><strong>GenerateCLChainStrData</strong></dt>
+<dd>
+<div class="examplebox">
+    ($AtomLinesArrayRef, $BondLinesArrayRef) =
+       GenerateCLChainStrData($ChainType, $CmpdDataRef);</div>
+<p>Return array references containing atom and bond data lines for SD file. Appropriate atom
+and bond data lines are generated using chain type and abbreviation template data.</p>
+</dd>
+<dt><strong>GenerateSDFile</strong></dt>
+<dd>
+<div class="examplebox">
+    GenerateSDFile($SDFileName, $CmdAbbrevsRef);</div>
+<p>Generate a SD file for compound abbreviations. Structure data for specified abbreviation
+is generated sequentially and written to SD file.</p>
+</dd>
+<dt><strong>GetCLTemplatesData</strong></dt>
+<dd>
+<div class="examplebox">
+    $TemplatesDataRef = GetCLTemplatesData();</div>
+<p>Return a reference to a hash containing CL templates data</p>
+</dd>
+<dt><strong>GetCLSupportedHeadGroupMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $SupportedHeadGroupDataRef = GetCLSupportedHeadGroupMap();</div>
+<p>Return a reference to a hash containing supported head groups data.</p>
+</dd>
+<dt><strong>GetCLTemplateID</strong></dt>
+<dd>
+<div class="examplebox">
+    $HeadGroupID = GetCLTemplateID($HeadGroupAbbrev, $ChainsAbbrev);</div>
+<p>Return a supported template ID for compound abbreviation.</p>
+</dd>
+<dt><strong>IsCLChainsAbbrevSupported</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsCLChainsAbbrevSupported($Abbrev, $PrintWarning);</div>
+<p>Return 1 or 0 based on whether CL abbreviated is supported. For unsupported CL abbreviations,
+a warning is printed unless PrintWarning flag is set.</p>
+</dd>
+<dt><strong>ParseCLAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    ($HeadGroup, $ChainsAbbrev, $AbbrevModifier) =
+       ParseCLAbbrev($Abbrev);</div>
+<p>Parse CL abbreviation and return these values: HeadGroup, ChainsAbbrev,
+AbbrevModifier.</p>
+</dd>
+<dt><strong>ProcessCLCmpdAbbrevs</strong></dt>
+<dd>
+<div class="examplebox">
+    ProcessCLCmpdAbbrevs($CmpdAbbrevsRef, $AllowArbitraryChainAbbrev,
+                         $WriteSDFile, $SDFileName);</div>
+<p>Process specified CL abbreviations to generate structures and write them out either
+a SD file or simply report number of valid abbreviations.</p>
+</dd>
+<dt><strong>SetupCLCmpdAbbrevTemplateDataMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $AbbrevTemplateDataMapRef =
+       SetupCLCmpdAbbrevTemplateDataMap($Abbrev);</div>
+<p>Return a reference to a hash containing template data for compound abbreviation. The
+template data is used to generate SD file for compound abbreviation.</p>
+</dd>
+<dt><strong>ValidateCLAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = ValidateCLAbbrev($Abbrev);</div>
+<p>Return 1 or 0 based on whether a CL abbreviation is valid.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./ChainAbbrev.html">ChainAbbrev.pm</a>,&nbsp<a href="./ChainStr.html">ChainStr.pm</a>,&nbsp<a href="./LMAPSStr.html">LMAPSStr.pm</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

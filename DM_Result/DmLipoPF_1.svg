@@ -1,0 +1,843 @@
+<svg version="1.1"
+     baseProfile="full"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:ev="http://www.w3.org/2001/xml-events"
+     width="505.89" height="505.89"
+     viewBox="0,0,505.89,505.89"
+     font-family="Arial, Helvetica, sans-serif"
+     onload='Init(evt)'
+>
+<title>plot</title>
+<desc>R SVG Plot with tooltips! (mode=2)</desc>
+<script type="text/ecmascript"><![CDATA[
+   // This code for a title + two-line tooltip mode displays OK in
+   // the default SVG renderers in Firefox and Safari, but does not
+   // display in the Batik standalone SVG viewer. It probably needs
+   // some declarations to extend XML elements to make it fully
+   // compliant with the SVG specs, see man/RSVGTipsDevice.future.Rd.
+   var SVGDocument = null;
+   var SVGRoot = null;
+   var SVGViewBox = null;
+   var svgns = 'http://www.w3.org/2000/svg';
+   var xlinkns = 'http://www.w3.org/1999/xlink';
+   var toolTip = null;
+   var TrueCoords = null;
+   var tipBox = null;
+   var tipText = null;
+   var tipTitle = null;
+   var tipDesc1 = null;
+   var tipDesc2 = null;
+
+   var lastElement = null;
+   var titleText = '';
+   var titleDesc = '';
+
+
+   function Init(evt)
+   {
+      SVGDocument = evt.target.ownerDocument;
+      SVGRoot = SVGDocument.documentElement;
+      TrueCoords = SVGRoot.createSVGPoint();
+
+      toolTip = SVGDocument.getElementById('ToolTip');
+      tipBox = SVGDocument.getElementById('tipbox');
+      tipText = SVGDocument.getElementById('tipText');
+      tipText.setAttributeNS(null, 'font-family', 'Arial, sans-serif' );
+      tipTitle = SVGDocument.getElementById('tipTitle');
+      tipDesc1 = SVGDocument.getElementById('tipDesc1');
+      tipDesc2 = SVGDocument.getElementById('tipDesc2');
+      //window.status = (TrueCoords);
+
+      //create event for object
+      SVGRoot.addEventListener('mousemove', ShowTooltip, false);
+      SVGRoot.addEventListener('mouseout', HideTooltip, false);
+   };
+
+
+   function GetTrueCoords(evt)
+   {
+      // find the current zoom level and pan setting, and adjust the reported
+      //    mouse position accordingly
+      var newScale = SVGRoot.currentScale;
+      var translation = SVGRoot.currentTranslate;
+      TrueCoords.x = (evt.clientX - translation.x)/newScale;
+      TrueCoords.y = (evt.clientY - translation.y)/newScale;
+   };
+
+
+   function HideTooltip( evt )
+   {
+      toolTip.setAttributeNS(null, 'visibility', 'hidden');
+   };
+
+
+   function ShowTooltip( evt )
+   {
+      GetTrueCoords( evt );
+
+      var tipScale = 1/SVGRoot.currentScale;
+      var textWidth = 0;
+      var tspanWidth = 0;
+      var boxHeight = 20;
+
+      tipBox.setAttributeNS(null, 'transform', 'scale(' + tipScale + ',' + tipScale + ')' );
+      tipText.setAttributeNS(null, 'transform', 'scale(' + tipScale + ',' + tipScale + ')' );
+
+      var titleValue = '';
+      var desc1Value = '';
+      var desc2Value = '';
+      var targetElement = evt.target;
+      if ( lastElement != targetElement )
+      {
+	 var targetTitle = targetElement.getElementsByTagNameNS(svgns, 'title').item(0);
+	 if ( targetTitle )
+	 {
+	    // if there is a 'title' element, use its contents for the tooltip title
+	    titleValue = targetTitle.firstChild.nodeValue;
+	 }
+
+	 var targetDesc1 = targetElement.getElementsByTagNameNS(svgns, 'desc1').item(0);
+	 if ( targetDesc1 )
+	 {
+	    // if there is a 'desc1' element, use its contents for the tooltip desc1
+	    desc1Value = targetDesc1.firstChild.nodeValue;
+
+	    if ( '' == titleValue )
+	    {
+	       // if there is no 'title' element, use the contents of the 'desc1' element for the tooltip title instead
+	       titleValue = desc1Value;
+	       desc1Value = '';
+	    }
+	 }
+	 var targetDesc2 = targetElement.getElementsByTagNameNS(svgns, 'desc2').item(0);
+	 if ( targetDesc2 )
+	 {
+	    // if there is a 'desc2' element, use its contents for the tooltip desc
+	    desc2Value = targetDesc2.firstChild.nodeValue;
+	 }
+
+	 // if there is still no 'title' element, use the contents of the 'id' attribute for the tooltip title
+	 if ( '' == titleValue )
+	 {
+	    titleValue = targetElement.getAttributeNS(null, 'id');
+	 }
+
+	 // selectively assign the tooltip title and desc the proper values,
+	 //   and hide those which don't have text values
+	 //
+	 var titleDisplay = 'none';
+	 if ( '' != titleValue )
+	 {
+	    tipTitle.firstChild.nodeValue = titleValue;
+	    titleDisplay = 'inline';
+	 }
+	 tipTitle.setAttributeNS(null, 'display', titleDisplay );
+
+	 var desc1Display = 'none';
+	 if ( '' != desc1Value )
+	 {
+	    tipDesc1.firstChild.nodeValue = desc1Value;
+	    desc1Display = 'inline';
+	 }
+	 tipDesc1.setAttributeNS(null, 'display', desc1Display );
+
+	 var desc2Display = 'none';
+	 if ( '' != desc2Value )
+	 {
+	    tipDesc2.firstChild.nodeValue = desc2Value;
+	    desc2Display = 'inline';
+	 }
+	 tipDesc2.setAttributeNS(null, 'display', desc2Display );
+      }
+
+      // if there are tooltip contents to be displayed, adjust the size and position of the box
+      if ( '' != titleValue )
+      {
+	 var xPos = TrueCoords.x + (10 * tipScale);
+	 var yPos = TrueCoords.y + (10 * tipScale);
+
+	 //return rectangle around text as SVGRect object
+	 var outline = tipText.getBBox();
+	 tipBox.setAttributeNS(null, 'width', Number(outline.width) + 10);
+	 tipBox.setAttributeNS(null, 'height', Number(outline.height) + 10);
+
+	 // update position
+	 toolTip.setAttributeNS(null, 'transform', 'translate(' + xPos + ',' + yPos + ')');
+	 toolTip.setAttributeNS(null, 'visibility', 'visible');
+      }
+   };
+
+]]></script>
+<rect width="100%" height="100%" style="fill:#FFFFFF"/>
+<line x1="45.87" y1="470.14" x2="348.59" y2="470.14" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="45.87" y1="470.14" x2="45.87" y2="473.71" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="106.42" y1="470.14" x2="106.42" y2="473.71" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="166.96" y1="470.14" x2="166.96" y2="473.71" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="227.50" y1="470.14" x2="227.50" y2="473.71" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="288.05" y1="470.14" x2="288.05" y2="473.71" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="348.59" y1="470.14" x2="348.59" y2="473.71" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<text transform="translate(41.93,484.44) " fill="#000000"  style="font-size:7pt" >-2</text>
+<text transform="translate(102.48,484.44) " fill="#000000"  style="font-size:7pt" >-1</text>
+<text transform="translate(164.49,484.44) " fill="#000000"  style="font-size:7pt" >0</text>
+<text transform="translate(225.03,484.44) " fill="#000000"  style="font-size:7pt" >1</text>
+<text transform="translate(285.58,484.44) " fill="#000000"  style="font-size:7pt" >2</text>
+<text transform="translate(346.12,484.44) " fill="#000000"  style="font-size:7pt" >3</text>
+<line x1="28.60" y1="367.84" x2="28.60" y2="29.76" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="28.60" y1="367.84" x2="25.02" y2="367.84" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="28.60" y1="255.15" x2="25.02" y2="255.15" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="28.60" y1="142.46" x2="25.02" y2="142.46" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="28.60" y1="29.76" x2="25.02" y2="29.76" stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<text transform="translate(21.45,371.78)  rotate(-90)" fill="#000000"  style="font-size:7pt" >-1</text>
+<text transform="translate(21.45,257.62)  rotate(-90)" fill="#000000"  style="font-size:7pt" >0</text>
+<text transform="translate(21.45,144.93)  rotate(-90)" fill="#000000"  style="font-size:7pt" >1</text>
+<text transform="translate(21.45,32.23)  rotate(-90)" fill="#000000"  style="font-size:7pt" >2</text>
+<polyline points="28.60 , 470.14 397.56 , 470.14 397.56 , 7.15 28.60 , 7.15 28.60 , 470.14 " stroke-width="1px" stroke="#000000" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<text transform="translate(167.45,498.74) " fill="#000000"  style="font-size:7pt" >Principal&#160;component&#160;1</text>
+<line x1="28.60" y1="255.15" x2="397.56" y2="255.15" stroke-width="1px" stroke="#BEBEBE" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<line x1="166.96" y1="470.14" x2="166.96" y2="7.15" stroke-width="1px" stroke="#BEBEBE" fill="#000000" stroke-opacity="1.000000" fill-opacity="0.000000"/>
+<circle cx="307.11" cy="237.84" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_32_2_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="307.70" cy="238.30" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_32_1_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="308.13" cy="227.91" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_32_2_3</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="293.63" cy="261.72" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_34_2_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="295.40" cy="262.91" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_34_1_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="301.99" cy="266.28" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_34_0_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="297.72" cy="240.33" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_34_2_3</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="298.57" cy="243.90" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_34_1_3</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="276.49" cy="275.43" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_36_2_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="277.97" cy="276.67" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_36_1_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="284.51" cy="247.01" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_36_2_3</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="284.23" cy="252.18" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_36_1_3</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="261.12" cy="278.63" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_38_1_2</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="271.34" cy="246.46" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Cer_38_2_3</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="312.01" cy="31.01" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_24_1</desc1>
+<desc2>DG(12:0/12:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="319.86" cy="24.30" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_24_0</desc1>
+<desc2>DG(12:0/12:0/0:0)</desc2>
+</circle>
+<circle cx="301.84" cy="31.09" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_25_1</desc1>
+<desc2>DG(12:1(9Z)/13:0/0:0)</desc2>
+</circle>
+<circle cx="310.14" cy="30.77" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_25_0</desc1>
+<desc2>DG(12:0/13:0/0:0)</desc2>
+</circle>
+<circle cx="282.36" cy="41.53" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_26_2</desc1>
+<desc2>DG(13:1(9Z)/13:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="291.23" cy="40.40" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_26_1</desc1>
+<desc2>DG(13:0/13:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="299.19" cy="33.83" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_26_0</desc1>
+<desc2>DG(13:0/13:0/0:0)</desc2>
+</circle>
+<circle cx="272.38" cy="49.45" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_27_2</desc1>
+<desc2>DG(13:1(9Z)/14:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="281.70" cy="44.19" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_27_1</desc1>
+<desc2>DG(13:1(9Z)/14:0/0:0)</desc2>
+</circle>
+<circle cx="289.38" cy="42.20" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_27_0</desc1>
+<desc2>DG(13:0/14:0/0:0)</desc2>
+</circle>
+<circle cx="257.35" cy="76.65" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_28_3</desc1>
+<desc2>DG(12:1(9Z)/16:2(9Z,12Z)/0:0)</desc2>
+</circle>
+<circle cx="262.40" cy="55.91" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_28_2</desc1>
+<desc2>DG(14:1(9Z)/14:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="271.06" cy="53.66" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_28_1</desc1>
+<desc2>DG(14:0/14:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="279.00" cy="46.73" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_28_0</desc1>
+<desc2>DG(14:0/14:0/0:0)</desc2>
+</circle>
+<circle cx="253.30" cy="65.43" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_29_2</desc1>
+<desc2>DG(14:1(9Z)/15:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="262.48" cy="60.35" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_29_1</desc1>
+<desc2>DG(14:1(9Z)/15:0/0:0)</desc2>
+</circle>
+<circle cx="270.16" cy="57.42" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_29_0</desc1>
+<desc2>DG(14:0/15:0/0:0)</desc2>
+</circle>
+<circle cx="232.46" cy="112.29" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_30_4</desc1>
+<desc2>DG(12:1(9Z)/18:3(9Z,12Z,15Z)/0:0)</desc2>
+</circle>
+<circle cx="238.35" cy="103.48" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_30_3</desc1>
+<desc2>DG(12:1(9Z)/18:2(9Z,12Z)/0:0)</desc2>
+</circle>
+<circle cx="244.78" cy="72.60" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_30_2</desc1>
+<desc2>DG(15:1(9Z)/15:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="253.26" cy="72.50" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_30_1</desc1>
+<desc2>DG(14:1(9Z)/16:0/0:0)</desc2>
+</circle>
+<circle cx="224.25" cy="101.63" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_32_4</desc1>
+<desc2>DG(16:2(9Z,12Z)/16:2(9Z,12Z)/0:0)</desc2>
+</circle>
+<circle cx="225.97" cy="89.28" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_32_3</desc1>
+<desc2>DG(16:2(9Z,12Z)/16:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="229.60" cy="88.63" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_32_2</desc1>
+<desc2>DG(16:1(9Z)/16:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="236.23" cy="79.84" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_32_1</desc1>
+<desc2>DG(16:1(9Z)/16:0/0:0)</desc2>
+</circle>
+<circle cx="206.91" cy="124.56" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_34_4</desc1>
+<desc2>DG(16:2(9Z,12Z)/18:2(9Z,12Z)/0:0)</desc2>
+</circle>
+<circle cx="212.40" cy="118.68" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_34_3</desc1>
+<desc2>DG(16:2(9Z,12Z)/18:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="218.84" cy="106.35" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_34_2</desc1>
+<desc2>DG(17:1(9Z)/17:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="221.96" cy="109.94" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_34_1</desc1>
+<desc2>DG(16:1(9Z)/18:0/0:0)</desc2>
+</circle>
+<circle cx="209.18" cy="126.70" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_36_4</desc1>
+<desc2>DG(18:2(9Z,12Z)/18:2(9Z,12Z)/0:0)</desc2>
+</circle>
+<circle cx="208.03" cy="116.48" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_36_3</desc1>
+<desc2>DG(18:2(9Z,12Z)/18:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="210.89" cy="119.83" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_36_2</desc1>
+<desc2>DG(18:1(9Z)/18:1(9Z)/0:0)</desc2>
+</circle>
+<circle cx="214.63" cy="108.61" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>DAG_36_1</desc1>
+<desc2>DG(18:1(9Z)/18:0/0:0)</desc2>
+</circle>
+<circle cx="174.13" cy="335.16" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_26_0</desc1>
+<desc2>PC(13:0/13:0)</desc2>
+</circle>
+<circle cx="149.23" cy="364.36" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_28_1</desc1>
+<desc2>PC(14:0/14:1(9Z))</desc2>
+</circle>
+<circle cx="155.58" cy="355.33" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_28_0</desc1>
+<desc2>PC(14:0/14:0)</desc2>
+</circle>
+<circle cx="156.41" cy="407.27" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_30_3</desc1>
+<desc2>PC(12:1(9Z)/18:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="126.68" cy="387.42" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_30_2</desc1>
+<desc2>PC(15:1(9Z)/15:1(9Z))</desc2>
+</circle>
+<circle cx="134.67" cy="385.29" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_30_1</desc1>
+<desc2>PC(15:0/15:1(9Z))</desc2>
+</circle>
+<circle cx="140.43" cy="376.43" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_30_0</desc1>
+<desc2>PC(15:0/15:0)</desc2>
+</circle>
+<circle cx="117.28" cy="414.03" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_32_4</desc1>
+<desc2>PC(16:2(9Z,12Z)/16:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="116.10" cy="409.65" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_32_3</desc1>
+<desc2>PC(16:2(9Z,12Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="116.88" cy="407.52" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_32_2</desc1>
+<desc2>PC(16:1(9Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="123.76" cy="405.76" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_32_1</desc1>
+<desc2>PC(16:0/16:1(9Z))</desc2>
+</circle>
+<circle cx="128.68" cy="397.28" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_32_0</desc1>
+<desc2>PC(16:0/16:0)</desc2>
+</circle>
+<circle cx="127.90" cy="430.21" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_34_5</desc1>
+<desc2>PC(16:2(9Z,12Z)/18:3(9Z,12Z,15Z))</desc2>
+</circle>
+<circle cx="120.63" cy="414.88" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_34_4</desc1>
+<desc2>PC(18:2(9Z,12Z)/16:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="117.80" cy="431.78" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_34_3</desc1>
+<desc2>PC(16:2(9Z,12Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="115.27" cy="424.09" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_34_2</desc1>
+<desc2>PC(17:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="118.98" cy="417.66" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_34_1</desc1>
+<desc2>PC(17:1(9Z)/17:0)</desc2>
+</circle>
+<circle cx="130.08" cy="430.28" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PC_36_5</desc1>
+<desc2>PC(18:2(9Z,12Z)/18:3(9Z,12Z,15Z))</desc2>
+</circle>
+<circle cx="177.88" cy="388.44" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_28_1</desc1>
+<desc2>PE(14:0/14:1(9Z))</desc2>
+</circle>
+<circle cx="164.01" cy="406.80" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_30_1</desc1>
+<desc2>PE(15:0/15:1(9Z))</desc2>
+</circle>
+<circle cx="169.30" cy="399.46" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_30_0</desc1>
+<desc2>PE(15:0/15:0)</desc2>
+</circle>
+<circle cx="149.34" cy="430.33" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_32_4</desc1>
+<desc2>PE(16:2(9Z,12Z)/16:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="147.51" cy="426.77" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_32_3</desc1>
+<desc2>PE(16:2(9Z,12Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="147.50" cy="425.37" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_32_2</desc1>
+<desc2>PE(16:1(9Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="151.96" cy="418.38" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_32_1</desc1>
+<desc2>PE(16:1(9Z)/16:0)</desc2>
+</circle>
+<circle cx="158.46" cy="417.82" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_32_0</desc1>
+<desc2>PE(16:0/16:0)</desc2>
+</circle>
+<circle cx="154.32" cy="440.64" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_34_5</desc1>
+<desc2>PE(16:2(9Z,12Z)/18:3(9Z,12Z,15Z))</desc2>
+</circle>
+<circle cx="152.54" cy="446.53" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_34_4</desc1>
+<desc2>PE(16:2(9Z,12Z)/18:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="148.61" cy="446.82" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_34_3</desc1>
+<desc2>PE(16:2(9Z,12Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="146.87" cy="440.52" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_34_2</desc1>
+<desc2>PE(17:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="150.27" cy="435.52" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_34_1</desc1>
+<desc2>PE(17:1(9Z)/17:0)</desc2>
+</circle>
+<circle cx="165.86" cy="433.20" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_36_6</desc1>
+<desc2>PE(18:3(9Z,12Z,15Z)/18:3(9Z,12Z,15Z))</desc2>
+</circle>
+<circle cx="158.33" cy="439.19" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_36_5</desc1>
+<desc2>PE(18:2(9Z,12Z)/18:3(9Z,12Z,15Z))</desc2>
+</circle>
+<circle cx="156.81" cy="444.83" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_36_4</desc1>
+<desc2>PE(18:2(9Z,12Z)/18:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="153.23" cy="445.08" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_36_3</desc1>
+<desc2>PE(18:2(9Z,12Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="150.63" cy="447.06" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_36_2</desc1>
+<desc2>PE(18:1(9Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="155.54" cy="444.30" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PE_36_0</desc1>
+<desc2>PE(18:0/18:0)</desc2>
+</circle>
+<circle cx="155.58" cy="376.50" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#DEB887" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>PI_34_2</desc1>
+<desc2>PI(17:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="114.72" cy="128.06" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_38_2</desc1>
+<desc2>TG(13:1(9Z)/13:0/12:1(9Z))</desc2>
+</circle>
+<circle cx="122.37" cy="117.72" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_38_1</desc1>
+<desc2>TG(12:1(9Z)/13:0/13:0)</desc2>
+</circle>
+<circle cx="131.86" cy="115.42" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_38_0</desc1>
+<desc2>TG(12:0/13:0/13:0)</desc2>
+</circle>
+<circle cx="116.56" cy="120.20" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_39_1</desc1>
+<desc2>TG(13:0/13:0/13:1(9Z))</desc2>
+</circle>
+<circle cx="121.40" cy="122.77" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_39_0</desc1>
+<desc2>TG(13:0/13:0/13:0)</desc2>
+</circle>
+<circle cx="94.14" cy="123.13" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_40_3</desc1>
+<desc2>TG(13:1(9Z)/13:1(9Z)/14:1(9Z))</desc2>
+</circle>
+<circle cx="98.44" cy="123.47" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_40_2</desc1>
+<desc2>TG(13:1(9Z)/13:1(9Z)/14:0)</desc2>
+</circle>
+<circle cx="107.49" cy="119.76" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_40_1</desc1>
+<desc2>TG(13:0/13:1(9Z)/14:0)</desc2>
+</circle>
+<circle cx="114.52" cy="114.63" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_40_0</desc1>
+<desc2>TG(13:0/13:0/14:0)</desc2>
+</circle>
+<circle cx="89.22" cy="131.04" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_41_2</desc1>
+<desc2>TG(14:1(9Z)/13:1(9Z)/14:0)</desc2>
+</circle>
+<circle cx="96.24" cy="125.82" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_41_1</desc1>
+<desc2>TG(13:1(9Z)/14:0/14:0)</desc2>
+</circle>
+<circle cx="105.30" cy="122.37" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_41_0</desc1>
+<desc2>TG(13:0/14:0/14:0)</desc2>
+</circle>
+<circle cx="84.03" cy="139.81" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_42_4</desc1>
+<desc2>TG(12:1(9Z)/16:2(9Z,12Z)/14:1(9Z))</desc2>
+</circle>
+<circle cx="76.24" cy="141.20" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_42_3</desc1>
+<desc2>TG(14:1(9Z)/14:1(9Z)/14:1(9Z))</desc2>
+</circle>
+<circle cx="82.81" cy="133.61" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_42_2</desc1>
+<desc2>TG(14:1(9Z)/14:0/14:1(9Z))</desc2>
+</circle>
+<circle cx="87.04" cy="133.44" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_42_1</desc1>
+<desc2>TG(14:1(9Z)/14:0/14:0)</desc2>
+</circle>
+<circle cx="95.82" cy="131.39" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_42_0</desc1>
+<desc2>TG(14:0/14:0/14:0)</desc2>
+</circle>
+<circle cx="69.01" cy="150.79" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_43_3</desc1>
+<desc2>TG(14:1(9Z)/15:1(9Z)/14:1(9Z))</desc2>
+</circle>
+<circle cx="74.98" cy="139.06" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_43_2</desc1>
+<desc2>TG(14:1(9Z)/14:1(9Z)/15:0)</desc2>
+</circle>
+<circle cx="79.15" cy="144.57" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_43_1</desc1>
+<desc2>TG(14:1(9Z)/15:0/14:0)</desc2>
+</circle>
+<circle cx="87.28" cy="137.49" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_43_0</desc1>
+<desc2>TG(15:0/14:0/14:0)</desc2>
+</circle>
+<circle cx="64.38" cy="163.29" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_44_4</desc1>
+<desc2>TG(14:1(9Z)/16:2(9Z,12Z)/14:1(9Z))</desc2>
+</circle>
+<circle cx="65.73" cy="139.59" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_44_3</desc1>
+<desc2>TG(14:1(9Z)/15:1(9Z)/15:1(9Z))</desc2>
+</circle>
+<circle cx="67.65" cy="149.44" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_44_2</desc1>
+<desc2>TG(14:1(9Z)/15:1(9Z)/15:0)</desc2>
+</circle>
+<circle cx="73.72" cy="140.97" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_44_1</desc1>
+<desc2>TG(14:1(9Z)/15:0/15:0)</desc2>
+</circle>
+<circle cx="81.82" cy="135.64" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_44_0</desc1>
+<desc2>TG(15:0/14:0/15:0)</desc2>
+</circle>
+<circle cx="64.36" cy="142.87" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_45_2</desc1>
+<desc2>TG(15:1(9Z)/15:0/15:1(9Z))</desc2>
+</circle>
+<circle cx="66.33" cy="150.96" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_45_1</desc1>
+<desc2>TG(15:1(9Z)/15:0/15:0)</desc2>
+</circle>
+<circle cx="53.45" cy="162.89" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_46_4</desc1>
+<desc2>TG(15:1(9Z)/16:2(9Z,12Z)/15:1(9Z))</desc2>
+</circle>
+<circle cx="52.68" cy="160.63" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_46_3</desc1>
+<desc2>TG(15:1(9Z)/16:1(9Z)/15:1(9Z))</desc2>
+</circle>
+<circle cx="57.89" cy="153.21" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_46_2</desc1>
+<desc2>TG(15:1(9Z)/16:0/15:1(9Z))</desc2>
+</circle>
+<circle cx="59.94" cy="162.26" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_46_1</desc1>
+<desc2>TG(15:1(9Z)/16:0/15:0)</desc2>
+</circle>
+<circle cx="52.21" cy="160.53" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_47_2</desc1>
+<desc2>TG(15:1(9Z)/16:1(9Z)/16:0)</desc2>
+</circle>
+<circle cx="57.58" cy="151.69" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_47_1</desc1>
+<desc2>TG(15:1(9Z)/16:0/16:0)</desc2>
+</circle>
+<circle cx="45.17" cy="166.94" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_48_4</desc1>
+<desc2>TG(16:2(9Z,12Z)/16:1(9Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="45.88" cy="161.99" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_48_3</desc1>
+<desc2>TG(16:1(9Z)/16:1(9Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="51.16" cy="155.43" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_48_2</desc1>
+<desc2>TG(16:1(9Z)/16:0/16:1(9Z))</desc2>
+</circle>
+<circle cx="52.74" cy="158.95" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_48_1</desc1>
+<desc2>TG(16:1(9Z)/16:0/16:0)</desc2>
+</circle>
+<circle cx="43.77" cy="170.40" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_49_3</desc1>
+<desc2>TG(16:1(9Z)/17:1(9Z)/16:1(9Z))</desc2>
+</circle>
+<circle cx="47.59" cy="164.31" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_49_2</desc1>
+<desc2>TG(16:1(9Z)/17:0/16:1(9Z))</desc2>
+</circle>
+<circle cx="49.05" cy="170.44" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_49_1</desc1>
+<desc2>TG(16:1(9Z)/17:0/16:0)</desc2>
+</circle>
+<circle cx="48.04" cy="164.48" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_50_5</desc1>
+<desc2>TG(16:2(9Z,12Z)/16:2(9Z,12Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="43.00" cy="171.25" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_50_4</desc1>
+<desc2>TG(16:2(9Z,12Z)/17:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="44.49" cy="165.95" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_50_3</desc1>
+<desc2>TG(17:1(9Z)/16:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="44.51" cy="169.87" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_50_2</desc1>
+<desc2>TG(16:1(9Z)/17:1(9Z)/17:0)</desc2>
+</circle>
+<circle cx="48.53" cy="162.72" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_50_1</desc1>
+<desc2>TG(16:1(9Z)/17:0/17:0)</desc2>
+</circle>
+<circle cx="43.93" cy="178.38" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_51_4</desc1>
+<desc2>TG(16:2(9Z,12Z)/18:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="42.27" cy="172.91" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_51_3</desc1>
+<desc2>TG(17:1(9Z)/17:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="46.14" cy="167.29" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_51_2</desc1>
+<desc2>TG(17:1(9Z)/17:0/17:1(9Z))</desc2>
+</circle>
+<circle cx="47.00" cy="169.10" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_51_1</desc1>
+<desc2>TG(17:1(9Z)/17:0/17:0)</desc2>
+</circle>
+<circle cx="56.52" cy="169.40" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_52_6</desc1>
+<desc2>TG(18:2(9Z,12Z)/16:2(9Z,12Z)/18:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="49.58" cy="175.43" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_52_5</desc1>
+<desc2>TG(16:2(9Z,12Z)/18:2(9Z,12Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="46.39" cy="174.60" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_52_4</desc1>
+<desc2>TG(16:2(9Z,12Z)/18:1(9Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="43.22" cy="180.05" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_52_3</desc1>
+<desc2>TG(17:1(9Z)/18:1(9Z)/17:1(9Z))</desc2>
+</circle>
+<circle cx="45.21" cy="173.81" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_52_2</desc1>
+<desc2>TG(17:1(9Z)/18:0/17:1(9Z))</desc2>
+</circle>
+<circle cx="46.00" cy="178.18" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_52_1</desc1>
+<desc2>TG(17:1(9Z)/18:0/17:0)</desc2>
+</circle>
+<circle cx="57.41" cy="180.07" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_54_6</desc1>
+<desc2>TG(18:2(9Z,12Z)/18:2(9Z,12Z)/18:2(9Z,12Z))</desc2>
+</circle>
+<circle cx="52.86" cy="183.51" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_54_5</desc1>
+<desc2>TG(18:2(9Z,12Z)/18:2(9Z,12Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="49.88" cy="182.64" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_54_4</desc1>
+<desc2>TG(18:2(9Z,12Z)/18:1(9Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="47.85" cy="180.35" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_54_3</desc1>
+<desc2>TG(18:1(9Z)/18:1(9Z)/18:1(9Z))</desc2>
+</circle>
+<circle cx="49.98" cy="175.31" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_54_2</desc1>
+<desc2>TG(18:1(9Z)/18:0/18:1(9Z))</desc2>
+</circle>
+<circle cx="49.65" cy="177.85" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_54_1</desc1>
+<desc2>TG(18:1(9Z)/18:0/18:0)</desc2>
+</circle>
+<circle cx="57.82" cy="176.73" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_56_3</desc1>
+<desc2>TG(19:1(9Z)/18:1(9Z)/19:1(9Z))</desc2>
+</circle>
+<circle cx="56.34" cy="186.11" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>TAG_56_2</desc1>
+<desc2>TG(18:1(9Z)/19:1(9Z)/19:0)</desc2>
+</circle>
+<circle cx="359.01" cy="38.89" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#D2691E" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Brassicasterol</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="357.57" cy="129.52" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#D2691E" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Campesterol</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="355.58" cy="103.64" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#D2691E" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Stigmasterol</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="350.83" cy="121.84" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#D2691E" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>Sitosterol</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<circle cx="337.68" cy="143.15" r="4.02" stroke-width="1px" stroke="#FFFFFF" fill="#D2691E" stroke-opacity="0.000000" fill-opacity="0.590551">
+<desc1>ST_2_0_0</desc1>
+<desc2>UserDefinedSMILES</desc2>
+</circle>
+<text transform="translate(416.55,27.87) " fill="#000000"  style="font-size:7pt" >Cer&#160;[14]</text>
+<text transform="translate(416.55,75.51) " fill="#000000"  style="font-size:7pt" >DAG&#160;[33]</text>
+<text transform="translate(416.55,123.14) " fill="#000000"  style="font-size:7pt" >PA&#160;[0]</text>
+<text transform="translate(416.55,170.77) " fill="#000000"  style="font-size:7pt" >PC&#160;[18]</text>
+<text transform="translate(416.55,218.40) " fill="#000000"  style="font-size:7pt" >PE&#160;[19]</text>
+<text transform="translate(416.55,266.04) " fill="#000000"  style="font-size:7pt" >PG&#160;[0]</text>
+<text transform="translate(416.55,313.67) " fill="#000000"  style="font-size:7pt" >PI&#160;[1]</text>
+<text transform="translate(416.55,361.30) " fill="#000000"  style="font-size:7pt" >PS&#160;[0]</text>
+<text transform="translate(416.55,408.93) " fill="#000000"  style="font-size:7pt" >TAG&#160;[64]</text>
+<text transform="translate(416.55,456.57) " fill="#000000"  style="font-size:7pt" >Others&#160;[5]</text>
+<polygon points="405.37 , 28.32 413.42 , 28.32 413.42 , 20.28 405.37 , 20.28 " stroke-width="1px" stroke="#FFFFFF" fill="#00FF00" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 75.95 413.42 , 75.95 413.42 , 67.91 405.37 , 67.91 " stroke-width="1px" stroke="#FFFFFF" fill="#FF0000" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 123.59 413.42 , 123.59 413.42 , 115.54 405.37 , 115.54 " stroke-width="1px" stroke="#FFFFFF" fill="#7FFFD4" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 171.22 413.42 , 171.22 413.42 , 163.17 405.37 , 163.17 " stroke-width="1px" stroke="#FFFFFF" fill="#0000FF" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 218.85 413.42 , 218.85 413.42 , 210.81 405.37 , 210.81 " stroke-width="1px" stroke="#FFFFFF" fill="#8A2BE2" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 266.48 413.42 , 266.48 413.42 , 258.44 405.37 , 258.44 " stroke-width="1px" stroke="#FFFFFF" fill="#A52A2A" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 314.12 413.42 , 314.12 413.42 , 306.07 405.37 , 306.07 " stroke-width="1px" stroke="#FFFFFF" fill="#DEB887" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 361.75 413.42 , 361.75 413.42 , 353.70 405.37 , 353.70 " stroke-width="1px" stroke="#FFFFFF" fill="#5F9EA0" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 409.38 413.42 , 409.38 413.42 , 401.34 405.37 , 401.34 " stroke-width="1px" stroke="#FFFFFF" fill="#7FFF00" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<polygon points="405.37 , 457.01 413.42 , 457.01 413.42 , 448.97 405.37 , 448.97 " stroke-width="1px" stroke="#FFFFFF" fill="#D2691E" stroke-opacity="0.000000" fill-opacity="0.590551" />
+<g id='ToolTip' opacity='1' visibility='hidden' pointer-events='none'>
+   <rect id='tipbox' x='0' y='5' width='88' height='20' rx='2' ry='2' fill='white' stroke='black'/>
+   <text id='tipText' x='5' y='20' font-family='Arial' font-size='10pt' fill='blue'>
+      <tspan id='tipTitle' x='5' font-weight='bold' fill='black'><![CDATA[]]></tspan>
+      <tspan id='tipDesc1' x='5' dy='13'><![CDATA[]]></tspan>
+      <tspan id='tipDesc2' x='5' dy='13'><![CDATA[]]></tspan>
+   </text>
+</g>
+</svg>

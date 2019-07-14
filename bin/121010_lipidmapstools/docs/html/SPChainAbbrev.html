@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: SPChainAbbrev.pm</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/SPChainAbbrev.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/SPChainAbbrev.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>SPChainAbbrev - Methods for processing SP chain abbreviations</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>use SPChainAbbrev;</p>
+<p>use SPChainAbbrev qw(:all);</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>SPChainAbbrev module provides these methods:</p>
+<div class="examplebox">
+    ChainAbbrevNameExists - Is it a supported chain abbreviation
+ <br/>   ExpandChainAbbrev - Expand wild cards in chain abbreviation
+ <br/>   GetChainAbbrevToNameMap - Get chain name
+ <br/>   GetChainLenAbbrevSupportedMap - Get reference to supported chain
+                                    abbreviations data
+ <br/>   GetChainLenAbbrevDbleBondGeometyDataMap - Get reference to supported chain
+                                              double bond geometry data
+ <br/>   GetSupportedChainLenList - Get supported chain lengths
+ <br/>   IsSphingosineChainAbbrev - Is it a sphingosine chain abbreviation
+ <br/>   IsSphingosineC18ChainAbbrev - Is it a sphingosine C18 abbreviation
+ <br/>   IsSphinganineC18ChainAbbrev - Is it a sphinganine C18 abbreviation</div>
+<p>
+</p>
+<h2>METHODS</h2>
+<dl>
+<dt><strong>ChainAbbrevNameExists</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = ChainAbbrevNameExists($ChainAbbrev, $ChainType);</div>
+<p>Return 1 or 0 based on whether it's a supported chain name.</p>
+</dd>
+<dt><strong>ExpandChainAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $AbbrevArrayRef = ExpandChainAbbrev($Abbrev);</div>
+<p>Return a reference to an array containing complete chain abbreviations. Wild card
+characters in chain abbreviation name are expanded to generate fully qualified
+chain abbreviations.</p>
+</dd>
+<dt><strong>GetChainAbbrevToNameMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $AbbrevNameHashRef = GetChainAbbrevToNameMap();</div>
+<p>Return a reference to hash with chain abbreviation/name as key/value pair.</p>
+</dd>
+<dt><strong>GetChainLenAbbrevSupportedMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $ChainLenHashRef = GetChainLenAbbrevSupportedMap();</div>
+<p>Return a reference to hash with supported chain length as hash key.</p>
+</dd>
+<dt><strong>GetChainLenAbbrevDbleBondGeometyDataMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $ChainLenDblBondHashRef = GetChainLenAbbrevDbleBondGeometyDataMap();</div>
+<p>Return a reference to hash containing information about chain length, number of
+double bonds and geometry of double bonds.</p>
+</dd>
+<dt><strong>GetSupportedChainLenList</strong></dt>
+<dd>
+<div class="examplebox">
+    $ChainLengthListRef = GetSupportedChainLenList();</div>
+<p>Return a reference to a sorted list containing supported chain lengths.</p>
+</dd>
+<dt><strong>IsChainAbbrevOkay</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsChainAbbrevOkay($ChainAbbrev);</div>
+<p>Return 1 or 0 based on whether chain abbreviation is valid.</p>
+</dd>
+<dt><strong>IsSphingosineChainAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSphingosineChainAbbrev($ChainAbbrev);</div>
+<p>Return 1 or 0 based on whether it's a sphingosine chain abbreviation.</p>
+</dd>
+<dt><strong>IsSphingosineC18ChainAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSphingosineC18ChainAbbrev($ChainAbbrev);</div>
+<p>Return 1 or 0 based on whether it's a sphingosine abbreviation with chain length
+of 18.</p>
+</dd>
+<dt><strong>IsSphinganineC18ChainAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsSphinganineC18ChainAbbrev($ChainAbbrev);</div>
+<p>Return 1 or 0 based on whether it's a sphinganine abbreviation with chain length
+of 18.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./LMAPSStr.html">LMAPSStr.pm</a>,&nbsp<a href="./ChainStr.html">ChainStr.pm</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

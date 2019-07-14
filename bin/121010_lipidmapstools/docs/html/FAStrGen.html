@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: FAStrGen.pl</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/FAStrGen.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/FAStrGen.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>FAStrGen.pl - Generate structures for Fatty Acyls (FA)</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>FAStrGen.pl  FAAbbrev|FAAbbrevFileName ...</p>
+<p>FAStrGen.pl [<strong>-h, --help</strong>] [<strong>-m, --mode</strong> <em>Abbrev | AbbrevFileName</em>]
+[<strong>-p, --ProcessMode</strong> <em>WriteSDFile | CountOnly</em>] [<strong>-o, --overwrite</strong>]
+[<strong>-r, --root</strong> rootname] [<strong>-w, --workingdir</strong> dirname] &lt;arguments&gt;...</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>Generate Fatty Acyls (FA) structures using compound abbreviations specified on
+a command line or in a CSV/TSV Text file. All the command line arguments represent either
+compound abbreviations or file name containing abbreviations. Use mode option to control
+the type of command line arguments.</p>
+<p>A SD file, containing structures for all SP abbreviations along with ontological information, is
+generated as an output.</p>
+<p>
+</p>
+<h2>SUPPORTED ABBREVIATIONS</h2>
+<p>Current support for FA structure generation include these main classes and sub classes:</p>
+<p>o Fatty Acids and Conjugates</p>
+<div class="examplebox">
+    . Straight chain fatty acids
+ <br/>   . Methyl branched fatty acids
+ <br/>   . Unsaturated fatty acids
+ <br/>   . Hydroperoxy fatty acids
+ <br/>   . Hydroxy fatty acids
+ <br/>   . Oxo fatty acids
+ <br/>   . Epoxy fatty acids
+ <br/>   . Methoxy fatty acids
+ <br/>   . Halogenated fatty acids
+ <br/>   . Amino fatty acids
+ <br/>   . Cyano fatty acids
+ <br/>   . Nitro fatty acids
+ <br/>   . Thia fatty acids</div>
+<p>o Eicosanoids</p>
+<div class="examplebox">
+    . Prostaglandins</div>
+<p>o Fatty alcohols</p>
+<p>o Fatty aldehydes</p>
+<p>o Fatty  amides</p>
+<div class="examplebox">
+    . Primary amides</div>
+<p>
+</p>
+<h2>OPTIONS</h2>
+<dl>
+<dt><strong>-h, --help</strong></dt>
+<dd>
+<p>Print this help message</p>
+</dd>
+<dt><strong>-m, --mode</strong> <em>Abbrev|AbbrevFileName</em></dt>
+<dd>
+<p>Controls interpretation of command line arguments. Two different methods are provided:
+specify compound abbreviations or a file name containing compound abbreviations. Possible
+values: <em>Abbrev or AbbrevFileName</em>. Default: <em>Abbrev</em></p>
+<p>In <em>AbbrevFileName</em> mode, a single line in CSV/TSV files can contain multiple compound
+abbreviations. The file extension determines delimiter used to process data lines: comma for
+CSV and tab for TSV. For files with TXT extension, only one compound abbreviation per line
+is allowed.</p>
+<p>Wild card character, *, is also supported in compound abbreviations to generate straight
+chain and unsaturated fatty acids.</p>
+<p>Examples:</p>
+<div class="examplebox">
+    Specific structures: &quot;18:0&quot; &quot;20:4(5Z,8Z,11Z,14Z)&quot;
+                         &quot;28:1(12Z)(2Me,4Me,6Me)&quot;
+                         &quot;18:3(6Z,9Z,11E)(13OOH[S])&quot;
+                         &quot;18:2(9E,11E)(13OH)&quot;
+                         &quot;18:1(10E)(9Ke,10Ep)&quot;
+                         &quot;16:1(5Z)(2OMe)&quot; &quot;7:1(2Z)(3Br)&quot;
+                         &quot;18:2(9Z,12Z)(10NO2)&quot; &quot;16:2(10E,12Z)(1OH)&quot;
+                         &quot;6:0(1CHO)&quot; &quot;12:0(1NH2)&quot;
+                         &quot;20:2(5Z,13E)(9OH[S],11OH[R],15OH[S]){8a,12b}&quot;
+ <br/>   All possibilites: *:* or *</div>
+<p>With wild card character, +/- can also be used for chain lengths to indicate even and odd lengths;
+additionally &gt; and &lt; qualifiers are also allowed to specify length requirements. Examples:</p>
+<div class="examplebox">
+    Odd number chains: &quot;*-:*&quot;
+ <br/>   Even number chains: &quot;*+:*&quot;
+ <br/>   Odd number chains with chain length longer than 18: &quot;*-&gt;18:*&quot;
+ <br/>   Even number chains with chain length longer than 14: &quot;*+&gt;14:*&quot;</div>
+</dd>
+<dt><strong>-o, --overwrite</strong></dt>
+<dd>
+<p>Overwrite existing files</p>
+</dd>
+<dt><strong>-r, --root</strong> <em>rootname</em></dt>
+<dd>
+<p>New file name is generated using the root: &lt;Root&gt;.sdf. Default for new file names: FAAbbrev.sdf,
+&lt;AbbrevFilenName&gt;.sdf, or &lt;FirstAbbrevFileName&gt;1To&lt;Count&gt;.sdf.</p>
+</dd>
+<dt><strong>-p, --ProcessMode</strong> <em>WriteSDFile|CountOnly</em></dt>
+<dd>
+<p>Specify how abbreviations are processed: generate structures for specified abbreviations along
+with generating a SD file or just count the number of structures corresponding to specified
+abbreviations without generating any SD file. Possible values: <em>WriteSDFile or CountOnly</em>.
+Default: <em>WriteSDFile</em>.</p>
+<p>It can take substantial amount of time for generating all the structures and writing out a SD file
+for abbreviations containing wild cards. <em>CountOnly</em> value of <strong>--ProcessMode</strong> option can
+be used to get a quick count of number of structures to be generated without writing out any
+SD file.</p>
+</dd>
+<dt><strong>-w, --workingdir</strong> <em>dirname</em></dt>
+<dd>
+<p>Location of working directory. Default: current directory</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>EXAMPLES</h2>
+<p>On some systems, command line scripts may need to be invoked using
+<em>perl -s FAStrGen.pl</em>; however, all the examples assume direct invocation
+of command line script works.</p>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for straight chain fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;18:0&quot; &quot;9:0&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for methyl branched fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;8:0(6Me)&quot; &quot;18:1(6Z)(17Me)&quot;
+    &quot;28:1(12Z)(2Me,4Me,6Me)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for unsaturated fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;20:4(5Z,8Z,11Z,14Z)&quot; &quot;8:1(5E)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for hydroperoxy fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;18:2(9E,11E)(13OOH)&quot;
+    &quot;18:3(6Z,9Z,11E)(13OOH[S])&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for hydroxy fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;10:0(10OH)&quot; &quot;15:0(2OH,15OH)&quot;
+     &quot;18:2(9E,11E)(13OH)&quot; &quot;4:0(3OH[R])&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for oxo fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;10:0(2Ke)&quot; &quot;18:1(10E)(9Ke,10Ep)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for epoxy fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;18:0(6Ep)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for methoxy fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;18:1(9E)(12OH,13OH,11OMe)&quot;
+    &quot;16:1(5Z)(2OMe)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for halogenated fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;7:1(2Z)(3Br)&quot; &quot;26:2(5Z,9Z)(2Br)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for amino fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;13:0(2NH2[S])&quot; &quot;4:0(2NH2,4CN)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for Cyano fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;4:0(4CN)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for nitro fatty acids, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;18:2(9Z,12Z)(10NO2)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for prostaglanins, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;20:2(5Z,13E)(9OH[S],11OH[R],
+    15OH[S]){8a,12b}&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for fatty alcohols, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;26:0(1OH)&quot; &quot;16:2(10E,12Z)(1OH)&quot;
+    &quot;11:0(1OH,2Me,2Me,9Me,9Me,10OH)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for fatty aldehydes, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;6:0(1CHO)&quot; &quot;16:2(2E,4E)(1CHO,6OH)&quot;</div>
+<p>To generate a FAStructures.sdf file containing a structure specified
+by a command line FA abbreviation for primary amides, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;12:0(1NH2)&quot;</div>
+<p>To enumerate straight chain and unsaturated fatty acids with commonly occuring
+chain lengths and generate FAStructures.sdf file, type:</p>
+<div class="examplebox">
+    % FAStrGen.pl -r FAStructures -o &quot;*&quot;</div>
+<p>or</p>
+<div class="examplebox">
+    % FAStrGen.pl -r SPStructures -o &quot;*:*&quot;</div>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./CLStrGen.html">CLStrGen.pl</a>,&nbsp<a href="./GLStrGen.html">GLStrGen.pl</a>,&nbsp<a href="./GPStrGen.html">GPStrGen.pl</a>,&nbsp<a href="./SPStrGen.html">SPStrGen.pl</a>,&nbsp<a href="./STStrGen.html">STStrGen.pl</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

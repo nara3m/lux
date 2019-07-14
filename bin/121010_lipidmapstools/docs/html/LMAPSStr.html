@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: LMAPSStr.pm</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/LMAPSStr.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/LMAPSStr.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>LMAPSStr - Glycerolipids (GL) structure generation methods</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>use LMAPSStr;</p>
+<p>use LMAPSStr qw(:all);</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>LMAPSStr module provides these methods:</p>
+<div class="examplebox">
+    GenerateCmpdAtomLine - Generate SD file atom data line
+ <br/>   GenerateCmpdBondLine - Generate SD file bond data line
+ <br/>   GenerateCmpdCountsLine - Generate SD file count data line
+ <br/>   GenerateCmpdMiscInfoLine - Generate SD file misc data line
+ <br/>   ParseCmpdAtomLine - Parse SD file atom data line
+ <br/>   ParseCmpdBondLine - Parse SD file bond data line
+ <br/>   ParseCmpdCountsLine - Parse SD file count data line
+ <br/>   RoundToNextInteger - Round up to next integer
+ <br/>   SetupCmpdAbbrevs - Setup lipid abbreviations
+ <br/>   SetupSDFileName - Setup SD file name
+ <br/>   StandardizeStereochemistrySpec - Standardize stereochemistry
+ <br/>   StandardizeStereochemistrySpec - Standardize ring stereochemistry</div>
+<p>
+</p>
+<h2>METHODS</h2>
+<dl>
+<dt><strong>GenerateCmpdAtomLine</strong></dt>
+<dd>
+<div class="examplebox">
+    $Line = GenerateCmpdAtomLine($AtomX, $AtomY, $AtomZ, $AtomSymbol);</div>
+<p>Return a formatted atom data line for SD file.</p>
+</dd>
+<dt><strong>GenerateCmpdBondLine</strong></dt>
+<dd>
+<div class="examplebox">
+    $Line = GenerateCmpdBondLine($FirstAtomNum, $SecondAtomNum,
+            $BondType, [$BondStereo]);</div>
+<p>Return a formatted bond data line for SD file.</p>
+</dd>
+<dt><strong>GenerateCmpdCountsLine</strong></dt>
+<dd>
+<div class="examplebox">
+    $Line = GenerateCmpdCountsLine($AtomCount, $BondCount,
+            [$ChiralFlag, $PropertyCount, $Version]);</div>
+<p>Return a formatted count data line for SD file.</p>
+</dd>
+<dt><strong>GenerateCmpdMiscInfoLine</strong></dt>
+<dd>
+<div class="examplebox">
+    $Line = GenerateCmpdMiscInfoLine();</div>
+<p>Return a formatted miscellaneous data line for SD file. In addition to a time stamp, LipdMAPS
+name is used as the program name.</p>
+</dd>
+<dt><strong>ParseCmpdAtomLine</strong></dt>
+<dd>
+<div class="examplebox">
+    ($AtomX, $AtomY, $AtomZ, $AtomSymbol) = ParseCmpdAtomLine($Line);</div>
+<p>Parse SD file atom data line and return a list with these values: atom coordinates and
+element symbol.</p>
+</dd>
+<dt><strong>ParseCmpdBondLine</strong></dt>
+<dd>
+<div class="examplebox">
+    ($FirstAtomNum, $SecondAtomNum, $BondType, $BondStereo) =
+        ParseCmpdBondLine($Line);</div>
+<p>Parse SD file atom bond data line and return a list containing these values: bond atom numbers and
+bond type.</p>
+</dd>
+<dt><strong>ParseCmpdCountsLine</strong></dt>
+<dd>
+<div class="examplebox">
+    ($AtomCount, $BondCount, $ChiralFlag, $PropertyCount, $Version) =
+         ParseCmpdCountsLine($Line);</div>
+<p>Parse SD file count data line and return a list containing these values:  atom/bond count and other
+miscellaneous count information.</p>
+</dd>
+<dt><strong>RoundToNextInteger</strong></dt>
+<dd>
+<div class="examplebox">
+    $IntegerValue = RoundToNextInteger($Number);</div>
+<p>Return an integer by rounding the number off to next integer.</p>
+</dd>
+<dt><strong>SetupCmpdAbbrevs</strong></dt>
+<dd>
+<div class="examplebox">
+    $AbbrebArrayRef = SetupCmpdAbbrevs($CmdLineOptionsRef);</div>
+<p>Return a reference to an array containing specified compound abbreviations by parsing
+command line arguments or processing files containing specified abbreviations.</p>
+</dd>
+<dt><strong>SetupSDFileName</strong></dt>
+<dd>
+<div class="examplebox">
+    $SDFilename = SetupSDFileName($LipidCategory, $CmdLineOptionsRef);</div>
+<p>Return a SD file name by processing a specified <em>-r, --root</em> option or using default
+values.</p>
+</dd>
+<dt><strong>StandardizeStereochemistrySpec</strong></dt>
+<dd>
+<div class="examplebox">
+    $StandardizeSpec = StandardizeStereochemistrySpec($StereochemistrySpec);</div>
+<p>Return a standardize stereochemistry specification containg R/S instead of a/b or
+alpha/beta.</p>
+</dd>
+<dt><strong>StandardizeRingStereochemistrySpec</strong></dt>
+<dd>
+<div class="examplebox">
+    $StandardizeSpec = StandardizeRingStereochemistrySpec($StereochemistrySpec);</div>
+<p>Return a standardize stereochemistry specification containg alpha/beta instead of
+a/b or alpha/beta.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./ChainAbbrev.html">ChainAbbrev.pm</a>,&nbsp<a href="./ChainStr.html">ChainStr.pm</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: LMStr.pm</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/LMStr.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/LMStr.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>LMStr - LIPID MAPS arbitrary structure generation methods</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>use LMStr;</p>
+<p>use LMStr qw(:all);</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>LMStr module provides these methods:</p>
+<div class="examplebox">
+    ExpandLMCmpdAbbrevs - Expand abbreviation
+ <br/>   GenerateCmpdOntologyData - Generate ontology data
+ <br/>   GenerateCmpdOntologySDDataLines - Generate ontology data lines for SD file
+ <br/>   GenerateLMChainStrData - Generate chain structure data
+ <br/>   GenerateSDFile - Generate SD file
+ <br/>   GetLMTemplatesData - Get templates data
+ <br/>   GetLMSupportedHeadGroupMap - Get supported headgroups data
+ <br/>   GetLMTemplateID - Get templates ID
+ <br/>   IsLMChainsAbbrevSupported - Is it a supported abbreviation
+ <br/>   ParseLMAbbrev - Parse abbreviation
+ <br/>   SetupLMCmpdAbbrevTemplateDataMap - Setup template structure data map
+ <br/>   ValidateLMAbbrev - Validate abbreviation</div>
+<p>
+</p>
+<h2>METHODS</h2>
+<dl>
+<dt><strong>ExpandLMCmpdAbbrevs</strong></dt>
+<dd>
+<div class="examplebox">
+    $ExpandedAbbrevArrayRef = ExpandLMCmpdAbbrevs($CmpdAbbrev);</div>
+<p>Return a reference to an array containing complete LM abbreviations. Wild card
+characters in LM abbreviation name are expanded to generate fully qualified
+LM abbreviations.</p>
+</dd>
+<dt><strong>GenerateCmpdOntologyData</strong></dt>
+<dd>
+<div class="examplebox">
+    $DataHashRef = GenerateCmpdOntologyData($CmpDataRef);</div>
+<p>Return a reference to a hash containing ontology data with hash keys and values
+corresponding to property names and values.</p>
+</dd>
+<dt><strong>GenerateCmpdOntologySDDataLines</strong></dt>
+<dd>
+<div class="examplebox">
+    $DataLinesArrayRef = GenerateCmpdOntologySDDataLines($CmpdDataRef);</div>
+<p>Return a reference to an array containing ontology data lines suitable for
+generate SD file data block.</p>
+</dd>
+<dt><strong>GenerateLMChainStrData</strong></dt>
+<dd>
+<div class="examplebox">
+    ($AtomLinesArrayRef, $BondLinesArrayRef) =
+       GenerateLMChainStrData($ChainType, $CmpdDataRef);</div>
+<p>Return array references containing atom and bond data lines for SD file. Appropriate atom
+and bond data lines are generated using chain type and abbreviation template data.</p>
+</dd>
+<dt><strong>GenerateSDFile</strong></dt>
+<dd>
+<div class="examplebox">
+    GenerateSDFile($SDFileName, $CmdAbbrevsRef);</div>
+<p>Generate a SD file for compound abbreviations. Structure data for specified abbreviation
+is generated sequentially and written to SD file.</p>
+</dd>
+<dt><strong>GetLMTemplatesData</strong></dt>
+<dd>
+<div class="examplebox">
+    $TemplatesDataRef = GetLMTemplatesData();</div>
+<p>Return a reference to a hash containing LM templates data</p>
+</dd>
+<dt><strong>GetLMSupportedHeadGroupMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $SupportedHeadGroupDataRef = GetLMSupportedHeadGroupMap();</div>
+<p>Return a reference to a hash containing supported head groups data.</p>
+</dd>
+<dt><strong>GetLMTemplateID</strong></dt>
+<dd>
+<div class="examplebox">
+    $HeadGroupID = GetLMTemplateID($HeadGroupAbbrev, $ChainsAbbrev);</div>
+<p>Return a supported template ID for compound abbreviation.</p>
+</dd>
+<dt><strong>IsLMChainsAbbrevSupported</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = IsLMChainsAbbrevSupported($Abbrev, $PrintWarning);</div>
+<p>Return 1 or 0 based on whether LM abbreviated is supported. For unsupported LM abbreviations,
+a warning is printed unless PrintWarning flag is set.</p>
+</dd>
+<dt><strong>ParseLMAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    ($HeadGroup, $ChainsAbbrev, $AbbrevModifier) =
+       ParseLMAbbrev($Abbrev);</div>
+<p>Parse LM abbreviation and return these values: HeadGroup, ChainsAbbrev,
+AbbrevModifier.</p>
+</dd>
+<dt><strong>SetupLMCmpdAbbrevTemplateDataMap</strong></dt>
+<dd>
+<div class="examplebox">
+    $AbbrevTemplateDataMapRef =
+       SetupLMCmpdAbbrevTemplateDataMap($Abbrev);</div>
+<p>Return a reference to a hash containing template data for compound abbreviation. The
+template data is used to generate SD file for compound abbreviation.</p>
+</dd>
+<dt><strong>ValidateLMAbbrev</strong></dt>
+<dd>
+<div class="examplebox">
+    $Status = ValidateLMAbbrev($Abbrev);</div>
+<p>Return 1 or 0 based on whether a LM abbreviation is valid.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./ChainAbbrev.html">ChainAbbrev.pm</a>,&nbsp<a href="./ChainStr.html">ChainStr.pm</a>,&nbsp<a href="./LMAPSStr.html">LMAPSStr.pm</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>

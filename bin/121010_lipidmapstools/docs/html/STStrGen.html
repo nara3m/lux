@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>LIPID MAPS Tools Documentation: STStrGen.pl</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="./LipidMAPSToolsDocs.css">
+</head>
+<body leftmargin="20" rightmargin="20" topmargin="10" bottommargin="10">
+<table border="0" width="100%">
+<tr>
+        <td class="logo" width="100"><a href="http://www.lipidmaps.org/index.html"><img src="LipidMAPSLogo.jpg" border="0" width="100" alt="LIPID MAPS Logo"/></a></td>
+        <td><span class="lmaps"><font color="#323442">LIPID</font> <font color="#323442">M</font>etabolites <font color="#323442">A</font>nd <font color="#323442">P</font>athways <font color="#323442">S</font>trategy</span></td>
+</tr>
+</table>
+<br />
+<div id="docnav">
+<table width="100%" border=0 cellpadding=0 cellspacing=2>
+<tr align="left" valign="top"><td align="right"><a href="./../pdf/STStrGen.pdf" title="PDF US Letter Size">PDF</a>&nbsp;&nbsp;<a href="./../pdfa4/STStrGen.pdf" title="PDF A4 Size">PDFA4</a></td></tr>
+</table>
+</div>
+<p>
+</p>
+<h2>NAME</h2>
+<p>STStrGen.pl - Generate structures for Sterols (ST)</p>
+<p>
+</p>
+<h2>SYNOPSIS</h2>
+<p>STStrGen.pl  FAAbbrev|FAAbbrevFileName ...</p>
+<p>STStrGen.pl [<strong>-h, --help</strong>] [<strong>-o, --overwrite</strong>] [<strong>-r, --root</strong> rootname]
+[<strong>-w, --workingdir</strong> dirname] &lt;arguments&gt;...</p>
+<p>
+</p>
+<h2>DESCRIPTION</h2>
+<p>Generate Strerol (ST) structures using compound abbreviations specified on
+a command line or in a CSV/TSV Text file. All the command line arguments represent either
+compound abbreviations or file name containing abbreviations. Use mode option to control
+the type of command line arguments.</p>
+<p>A SD file, containing structures for all SP abbreviations along with ontological information, is
+generated as an output.</p>
+<p>
+</p>
+<h2>SUPPORTED ABBREVIATIONS</h2>
+<p>Current support for ST structure generation include these main classes and sub classes:</p>
+<p>o Sterols</p>
+<div class="examplebox">
+    . Cholesterol and derivatives
+ <br/>   . Ergosterols and C24-methyl derivatives
+ <br/>   . Stigmasterols and C24-ethyl derivatives</div>
+<p>
+</p>
+<h2>OPTIONS</h2>
+<dl>
+<dt><strong>-h, --help</strong></dt>
+<dd>
+<p>Print this help message</p>
+</dd>
+<dt><strong>-m, --mode</strong> <em>Abbrev|AbbrevFileName</em></dt>
+<dd>
+<p>Controls interpretation of command line arguments. Two different methods are provided:
+specify compound abbreviations or a file name containing compound abbreviations. Possible
+values: <em>Abbrev or AbbrevFileName</em>. Default: <em>Abbrev</em></p>
+<p>In <em>AbbrevFileName</em> mode, a single line in CSV/TSV files can contain multiple compound
+abbreviations. The file extension determines delimiter used to process data lines: comma for
+CSV and tab for TSV. For files with TXT extension, only one compound abbreviation per line
+is allowed.</p>
+<p>Examples:</p>
+<div class="examplebox">
+    cholesterol: &quot;CHOLESTANE(3,b,OH:5(6))&quot;
+ <br/>   5alpha-cholestane: &quot;CHOLESTANE(5,a,H)&quot;
+ <br/>   25-hydroxy-cholesterol: &quot;CHOLESTANE(3,b,OH/25,,OH:5(6))&quot;
+ <br/>   5,6beta-epoxy-cholesterol: &quot;CHOLESTANE(3,b,OH/5,b,Ep)&quot;
+ <br/>   cholestenone: &quot;CHOLESTANE(3,,Ke:4)&quot;</div>
+<div class="examplebox">
+    ergost-5-en-3beta-ol: &quot;ERGOSTANE(3,b,OH:5)&quot;</div>
+<div class="examplebox">
+    campest-5-en-3beta-ol: &quot;CAMPESTANE(3,b,OH:5)&quot;</div>
+<div class="examplebox">
+    stigmast-5,25-dien-3beta-ol: &quot;STIGMASTANE(3,b,OH:5/25(26))&quot;</div>
+</dd>
+<dt><strong>-o, --overwrite</strong></dt>
+<dd>
+<p>Overwrite existing files</p>
+</dd>
+<dt><strong>-r, --root</strong> <em>rootname</em></dt>
+<dd>
+<p>New file name is generated using the root: &lt;Root&gt;.sdf. Default for new file names: STAbbrev.sdf,
+&lt;AbbrevFilenName&gt;.sdf, or &lt;FirstAbbrevFileName&gt;1To&lt;Count&gt;.sdf.</p>
+</dd>
+<dt><strong>-w, --workingdir</strong> <em>dirname</em></dt>
+<dd>
+<p>Location of working directory. Default: current directory</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2>EXAMPLES</h2>
+<p>On some systems, command line scripts may need to be invoked using
+<em>perl -s STStrGen.pl</em>; however, all the examples assume direct invocation
+of command line script works.</p>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for cholesterol, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(3,b,OH:5(6))&quot;</div>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for 5alpha-cholestane, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(5,a,H)&quot;</div>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for 25-hydroxy-cholesterol, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(3,b,OH/25,,OH:5(6))&quot;</div>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for 24S-hydroxy-cholesterol, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(3,b,OH/24,a,OH:5(6))&quot;</div>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for 5,6beta-epoxy-cholesterol, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(3,b,OH/5,b,Ep)&quot;</div>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for cholestenone, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(3,,Ke:4)&quot;</div>
+<p>To generate a STStructures.sdf file containing a structure specified
+by a command line abbreviation for desmostero;, type:</p>
+<div class="examplebox">
+    % STStrGen.pl -r STStructures -o &quot;CHOLESTANE(3,b,OH:5/24)&quot;</div>
+<p>
+</p>
+<h2>AUTHOR</h2>
+<p><a href="mailto:msud@sdsc.edu">Manish Sud</a></p>
+<p>
+</p>
+<h2>CONTRIBUTOR</h2>
+<p><a href="mailto:fahye@sdsc.edu">Eoin Fahy</a></p>
+<p>
+</p>
+<h2>SEE ALSO</h2>
+<p><a href="./CLStrGen.html">CLStrGen.pl</a>,&nbsp<a href="./FAStrGen.html">FAStrGen.pl</a>,&nbsp<a href="./GLStrGen.html">GLStrGen.pl</a>,&nbsp<a href="./GPStrGen.html">GPStrGen.pl</a>,&nbsp<a href="./SPStrGen.html">SPStrGen.pl</a>
+</p>
+<p>
+</p>
+<h2>COPYRIGHT</h2>
+<p>Copyright (C) 2006-2012. The Regents of the University of California. All Rights Reserved.</p>
+<p>
+</p>
+<h2>LICENSE</h2>
+<p>Modified BSD License</p>
+<p>&nbsp</p>
+</body>
+</html>
